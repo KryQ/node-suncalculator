@@ -49,24 +49,24 @@ const calculateMovements = (date, lat, lon, timezone = 0) => {
 	return {
 		sunlight_duration: sunlight_duration,
 		solar_time: solar_time,
-		solar_noon: solar_noon,
-		sunrise: sunrise,
-		sunset: sunset
+		solar_noon: new Date(date.getFullYear(), date.getMonth(), date.getDate(), ...floatToTime(solar_noon)),
+		sunrise: new Date(date.getFullYear(), date.getMonth(), date.getDate(), ...floatToTime(sunrise)),
+		sunset: new Date(date.getFullYear(), date.getMonth(), date.getDate(), ...floatToTime(sunset)),
 	}
 }
 
-const floatToDate = date => {
+const floatToTime = date => {
 	const seconds_in_day = 24 * 60 * 60;
 	const date_seconds = seconds_in_day * date;
-	const hour = Math.floor(date_seconds / 60 / 60)
+	const hours = Math.floor(date_seconds / 60 / 60)
 	const minutes = Math.floor((date_seconds % (60 * 60)) / 60)
 	const seconds = Math.floor((date_seconds % (60 * 60 * 60)) / 60 / 60)
 
-	return `${hour}:${minutes}:${seconds}`
+	return [hours, minutes, seconds]
 }
 
 module.exports = {
 	dateToJulianDay: dateToJulianDay,
 	calculateMovements: calculateMovements,
-	floatToDate: floatToDate
+	floatToTime: floatToTime
 }
