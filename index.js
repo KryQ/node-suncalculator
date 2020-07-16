@@ -19,8 +19,8 @@ const dateToJulianDay = date => {
 	return c + day + e + f - 1515.5; //1524.5;
 }
 
-export const calculateSunMovements = (lat, lon, timezone = 0) => {
-	const julian_day = dateToJulianDay(new Date());
+const calculateMovements = (date, lat, lon, timezone = 0) => {
+	const julian_day = dateToJulianDay(date);
 	const julian_century = (julian_day - 2451545) / 36525
 	const geom_mean_long = (280.46646 + julian_century * (36000.76983 + julian_century * 0.0003032)) % 360
 	const geom_mean_anom = 357.52911 + julian_century * (35999.05029 - 0.0001537 * julian_century)
@@ -39,8 +39,8 @@ export const calculateSunMovements = (lat, lon, timezone = 0) => {
 	const sun_declin = Math.degrees(Math.asin(Math.sin(Math.radians(obliq_corr)) * Math.sin(Math.radians(sun_app_long))))
 	const y = Math.tan(Math.radians(obliq_corr / 2)) * Math.tan(Math.radians(obliq_corr / 2))
 	const eq_of_time = 4 * Math.degrees(y * Math.sin(2 * Math.radians(geom_mean_long)) - 2 * eccent_orbit * Math.sin(Math.radians(geom_mean_anom)) + 4 * eccent_orbit * y * Math.sin(Math.radians(geom_mean_anom)) * Math.cos(2 * Math.random(geom_mean_long)) - 0.5 * y * y * Math.sin(4 * Math.radians(geom_mean_long)) - 1.25 * eccent_orbit * eccent_orbit * Math.sin(2 * Math.radians(geom_mean_anom)))
-	const ha_sunrise = Math.degrees(Math.acos(Math.cos(Math.radians(90.833)) / (Math.cos(Math.radians(latitude)) * Math.cos(Math.radians(sun_declin))) - Math.tan(Math.radians(latitude)) * Math.tan(Math.radians(sun_declin))))
-	const solar_noon = (720 - 4 * longitude - eq_of_time + timezone * 60) / 1440
+	const ha_sunrise = Math.degrees(Math.acos(Math.cos(Math.radians(90.833)) / (Math.cos(Math.radians(lat)) * Math.cos(Math.radians(sun_declin))) - Math.tan(Math.radians(lat)) * Math.tan(Math.radians(sun_declin))))
+	const solar_noon = (720 - 4 * lon - eq_of_time + timezone * 60) / 1440
 	const sunrise = (solar_noon * 1440 - ha_sunrise * 4) / 1440
 	const sunset = (solar_noon * 1440 + ha_sunrise * 4) / 1440
 	const sunlight_duration = ha_sunrise * 8;
@@ -55,7 +55,7 @@ export const calculateSunMovements = (lat, lon, timezone = 0) => {
 	}
 }
 
-export const floatToDate = date => {
+const floatToDate = date => {
 	const seconds_in_day = 24 * 60 * 60;
 	const date_seconds = seconds_in_day * date;
 	const hour = Math.floor(date_seconds / 60 / 60)
@@ -63,4 +63,10 @@ export const floatToDate = date => {
 	const seconds = Math.floor((date_seconds % (60 * 60 * 60)) / 60 / 60)
 
 	return `${hour}:${minutes}:${seconds}`
+}
+
+module.exports = {
+	dateToJulianDay: dateToJulianDay,
+	calculateMovements: calculateMovements,
+	floatToDate: floatToDate
 }
